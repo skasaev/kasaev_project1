@@ -12,22 +12,23 @@ import java.util.concurrent.TimeUnit;
 public class SeleniumConfig {
     private WebDriver driver;
 
-    public SeleniumConfig() {
-        driver = getDriverForIE();
+    public SeleniumConfig(boolean isHeadless) {
+        driver = isHeadless ? getDriverForChrome() : getDriverForIE();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
     }
 
     private WebDriver getDriverForIE() {
-        System.setProperty("webdriver.ie.driver","./driver\\IEDriverServer.exe");
+        System.setProperty("webdriver.ie.driver","driver/IEDriverServer.exe");
         InternetExplorerOptions options = new InternetExplorerOptions()
-                .setPageLoadStrategy(PageLoadStrategy.NORMAL)
                 .destructivelyEnsureCleanSession()
+                .setPageLoadStrategy(PageLoadStrategy.NORMAL)
                 .introduceFlakinessByIgnoringSecurityDomains()
                 .withInitialBrowserUrl("");
         return new InternetExplorerDriver(options);
     }
 
     private WebDriver getDriverForChrome() {
+        System.setProperty("webdriver.chrome.driver","driver/chromedriver.exe");
         ChromeOptions options = new ChromeOptions()
                 .setPageLoadStrategy(PageLoadStrategy.NORMAL)
                 .setHeadless(true)
