@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Parameters>
+    <Global>
+        <Excluded_vendors rating="4">
+            <Vendor>microprice</Vendor>
+            <Vendor>полюс</Vendor>
+        </Excluded_vendors>
+        <Price>
+            <Max>90000</Max>
+        </Price>
+    </Global>
+    <Manufacturers>
+        <Manufacturer products="notebook, pc, tablet, cell">
+            <Name>ASUS</Name>
+            <Pricelimit>
+                <Max>74120</Max>
+                <Min>32190</Min>
+            </Pricelimit>
+        </Manufacturer>
+        <Manufacturer products="pc">
+            <Name>HP</Name>
+            <Pricelimit>
+                <Max>54150</Max>
+                <Min>15140</Min>
+            </Pricelimit>
+        </Manufacturer>
+        <Manufacturer products="notebook, pc, tablet, cell">
+            <Name>Lenovo</Name>
+            <Pricelimit>
+                <Max>97330</Max>
+                <Min>12500</Min>
+            </Pricelimit>
+        </Manufacturer>
+    </Manufacturers>
+</Parameters>
