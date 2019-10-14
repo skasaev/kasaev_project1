@@ -1,5 +1,6 @@
 package tools;
 
+import io.qameta.allure.Step;
 import lombok.NonNull;
 import model.XmlFileParameters;
 
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.not;
 
 public class XmlTools {
 
+    @Step("Get test params from xml {url}")
     public XmlFileParameters getParamsFromXml(@NonNull final String url) {
         assertThat("Xml file url should not be empty", url, not(isEmptyString()));
         XmlFileParameters parameters = new XmlFileParameters();

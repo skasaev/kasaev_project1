@@ -37,7 +37,6 @@ public class CategoryPage extends MainPage {
 
     @Step("Select sub-category {subCategoryName} on Category page")
     public void selectSubCategory(@NonNull final String subCategoryName) {
-        assertThat("Sub category link list should not be mepty", subCategoryLinks, not(empty()));
         subCategoryLinks
                 .stream()
                 .filter(i -> i.exists() && i.getText().equalsIgnoreCase(subCategoryName))

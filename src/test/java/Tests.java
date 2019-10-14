@@ -56,9 +56,6 @@ public class Tests {
       driver.get(URL);
       assertThat("Title differs", driver.getTitle(), containsString("Яндекс.Маркет"));
 
-      XmlFileParameters params = tools.getParamsFromXml(NEW_XML_NAME);
-      assertThat("Failed on reading new xml file", params, notNullValue());
-
       MainPage mainPage = new MainPage(driver);
       mainPage.changeRegion(REGION);
       mainPage.checkRegion(REGION);
@@ -70,6 +67,9 @@ public class Tests {
 
       ListingPage listingPage = new ListingPage(driver);
       listingPage.checkTitle("Ноутбуки");
+
+      XmlFileParameters params = tools.getParamsFromXml(NEW_XML_NAME);
+      assertThat("Failed on reading new xml file", params, notNullValue());
    }
 
 }

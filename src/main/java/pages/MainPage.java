@@ -69,7 +69,6 @@ public class MainPage {
 
     @Step("Select category {categoryName} on Main page")
     public void selectCategory(@NonNull final String categoryName) {
-        assertThat("Category link list should not be empty", categoryLinks, not(empty()));
         categoryLinks
                 .stream()
                 .filter(link -> link.exists() && link.getText().equalsIgnoreCase(categoryName))
