@@ -15,12 +15,12 @@ public class SeleniumConfig {
     public SeleniumConfig(boolean isHeadless) {
         driver = isHeadless ? getDriverForChrome() : getDriverForIE();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
     }
 
     private WebDriver getDriverForIE() {
         System.setProperty("webdriver.ie.driver","driver/IEDriverServer.exe");
         InternetExplorerOptions options = new InternetExplorerOptions()
-                .destructivelyEnsureCleanSession()
                 .setPageLoadStrategy(PageLoadStrategy.NORMAL)
                 .introduceFlakinessByIgnoringSecurityDomains()
                 .withInitialBrowserUrl("");
