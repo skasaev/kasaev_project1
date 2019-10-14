@@ -5,16 +5,20 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
+import pages.elements.CatalogItem;
 import pages.elements.FilterBlock;
+import pages.elements.SelectBlock;
 import pages.elements.StoreRatingFilterBlock;
 import ru.yandex.qatools.htmlelements.annotations.Name;
 import ru.yandex.qatools.htmlelements.element.HtmlElement;
+import ru.yandex.qatools.htmlelements.element.Link;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalToIgnoringCase;
+import static org.hamcrest.Matchers.*;
 
 @Getter
 public class ListingPage extends MainPage {
@@ -29,7 +33,7 @@ public class ListingPage extends MainPage {
 
     @Name("Number of profucts per page option block")
     @FindBy(css = ".b-pager__select")
-    private HtmlElement pagerSelectBlock;
+    private SelectBlock pagerSelectBlock;
 
     @Name("Store rating filter block")
     @FindBy(css = "._2uSu7TQsMO")
@@ -41,7 +45,7 @@ public class ListingPage extends MainPage {
 
     @Name("Product list")
     @FindBy(css = ".n-snippet-card2")
-    private HtmlElement productList;
+    private List<CatalogItem> catalogItems;
 
     private final static String DIRECTION_CLASS_PART = "n-filter-sorter_sort_";
     private final static String SELECTED_CLASS = "n-filter-sorter_state_select";
@@ -57,13 +61,15 @@ public class ListingPage extends MainPage {
         assertThat("Category page title differs", listingPageTitle.getText(), equalToIgnoringCase(title));
     }
 
-    @Step("Select sorting by {optionName} and direction is {direction}")
+
+    @Step("Select sorting items by {optionName} and direction is {direction}")
     public void sortingBy(@NonNull final String optionName, final String direction) {
         final HtmlElement option = getSortingOptionByName(optionName);
         assertThat("Sorting option [" + optionName +"] should be displayed", option.exists());
         if (!isSortingOptionSelected(optionName, direction)) {
             option.click();
-            if (!option.getAttribute("class").contains(DIRECTION_CLASS_PART + direction.toLowerCase())) {
+            final String classPart = direction.contains("возрастанию") ? "asc" : "desc";
+            if (!option.getAttribute("class").contains(DIRECTION_CLASS_PART + classPart)) {
                 option.click();
             }
         }
@@ -71,12 +77,46 @@ public class ListingPage extends MainPage {
                 isSortingOptionSelected(optionName, direction));
     }
 
+    @Step("Check sorting items by price and {direction}")
+    public void verifySortingByPrice(@NonNull final String direction) {
+        final List<Integer> prices = catalogItems
+                .stream().map(CatalogItem::getPriceAsNumber).collect(Collectors.toList());
+        assertThat("Item price list should not be empty", prices, not(empty()));
+        int prevPrice;
+        if (direction.contains("возрастанию")) {
+            prevPrice = 0;
+            for (final Integer price : prices) {
+                assertThat("Invalid sort by " + direction + ". List of visible prices: " + prices,
+                        price, greaterThanOrEqualTo(prevPrice));
+                prevPrice = price;
+            }
+        } else {
+            prevPrice = prices.get(0);
+            for (int i = 1; i < prices.size(); i++) {
+                final int currentPrice = prices.get(i);
+                assertThat("Invalid sort by " + direction + ". List of visible prices: " + prices,
+                        currentPrice, lessThanOrEqualTo(prevPrice));
+                prevPrice = currentPrice;
+            }
+        }
+
+    }
+
+    @Step("Select {index} catalog item")
+    public void selectCatalogItemByIndex(int index) {
+        index = index < 0 ? 0 : index >= catalogItems.size() ? catalogItems.size()-1 : index - 1;
+        Link title = catalogItems.get(index).getItemTitle();
+        assertThat("Item title should be displayed", title.exists());
+        title.click();
+    }
+
     private boolean isSortingOptionSelected(@NonNull final String optionName, final String direction) {
         boolean result = true;
         final HtmlElement option = getSortingOptionByName(optionName);
         assertThat("Sorting option [" + optionName +"] should be displayed", option.exists());
         if (Objects.nonNull(direction)) {
-            final String elementClassDirection = DIRECTION_CLASS_PART + direction.toLowerCase();
+            final String classPart = direction.contains("возрастанию") ? "asc" : "desc";
+            final String elementClassDirection = DIRECTION_CLASS_PART + classPart;
             result = option.getAttribute("class").contains(elementClassDirection);
         }
         return result && option.getAttribute("class").contains(SELECTED_CLASS);

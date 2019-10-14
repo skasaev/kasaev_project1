@@ -1,4 +1,4 @@
-import io.qameta.allure.Step;
+import lombok.NonNull;
 import model.XmlFileParameters;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.*;
@@ -11,8 +11,7 @@ import tools.XmlTools;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 
 public class Tests {
@@ -70,6 +69,32 @@ public class Tests {
 
       XmlFileParameters params = tools.getParamsFromXml(NEW_XML_NAME);
       assertThat("Failed on reading new xml file", params, notNullValue());
+
+      checkByParams(params);
+   }
+
+   private void checkByParams(@NonNull final XmlFileParameters params) {
+       params.getManufacturers().getManufacturers().forEach(manufacturer -> {
+           ListingPage listingPage = new ListingPage(driver);
+           assertThat("Filter block should be displayed", listingPage.getFilterBlock().exists());
+
+           listingPage.getFilterBlock().selectFilterCheckBox("Производитель", manufacturer.getName());
+           final int maxPrice = Math.min(manufacturer.getPriceLimit().getMax(), params.getGlobal().getPrice().getMax());
+           listingPage.getFilterBlock().filterByPrice(String.valueOf(maxPrice), "max");
+           listingPage.getFilterBlock().filterByPrice(String.valueOf(manufacturer.getPriceLimit().getMin()), "min");
+
+           assertThat("Pager select block should be displayed", listingPage.getPagerSelectBlock().exists());
+           listingPage.getPagerSelectBlock().selectOption("Показывать по 12");
+
+           assertThat("Store rating filter block should be displayed", listingPage.getStoreRatingFilterBlock().exists());
+           listingPage.getStoreRatingFilterBlock().selectRatingFilter(params.getGlobal().getExcludedVendors().getRating());
+
+           assertThat("Sorting option list should not be empty", listingPage.getSortingOptions(), not(empty()));
+           listingPage.sortingBy("по цене", "по убыванию");
+           listingPage.verifySortingByPrice("по убыванию");
+
+           driver.get("https://market.yandex.ru/catalog--noutbuki/54544/");
+       });
    }
 
 }

@@ -37,9 +37,9 @@ public class FilterBlock extends HtmlElement {
         filterBlock.selectCheckBox(checkBoxLabelName);
     }
 
-    @Step("Filter by price{type} = {price}")
+    @Step("Filter by {type} price = {price}")
     public void filterByPrice(@NonNull final String price, @NonNull final String type) {
-        HtmlElement priceField = type.equalsIgnoreCase("From") ? priceFromField : priceToField;
+        HtmlElement priceField = type.equalsIgnoreCase("min") ? priceFromField : priceToField;
         assertThat("Price field should be displayed", priceField.exists());
         priceField.sendKeys(price);
     }

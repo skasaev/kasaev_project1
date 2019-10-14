@@ -6,12 +6,12 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 @Getter
-class ExcludedVendors implements BaseModel {
-    private int rating;
+public class ExcludedVendors implements BaseModel {
+    private String rating;
     private List<String> vendors;
 
     @XmlAttribute(name = "rating")
-    public void setRating(int rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 
