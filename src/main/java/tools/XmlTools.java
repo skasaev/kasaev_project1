@@ -24,7 +24,7 @@ public class XmlTools {
         assertThat("Xml file url should not be empty", url, not(isEmptyString()));
         XmlFileParameters parameters = new XmlFileParameters();
         try {
-            File file = new File("notebooks.xml");
+            File file = new File(url);
             JAXBContext jaxbContext = JAXBContext.newInstance(XmlFileParameters.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             parameters = (XmlFileParameters) jaxbUnmarshaller.unmarshal(file);

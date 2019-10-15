@@ -5,7 +5,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
-public class Global implements BaseModel {
+public class Global {
     private Price price;
     private ExcludedVendors excludedVendors;
 
@@ -16,10 +16,5 @@ public class Global implements BaseModel {
     @XmlElement(name = "Excluded_vendors")
     public void setExcludedVendors(ExcludedVendors excludedVendors) {
         this.excludedVendors = excludedVendors;
-    }
-
-    @Override
-    public String toString() {
-        return gson.toJson(this);
     }
 }

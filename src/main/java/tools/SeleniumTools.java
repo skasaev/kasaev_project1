@@ -30,21 +30,20 @@ public class SeleniumTools {
 
     public boolean waitWithConditionSilent(@NonNull final ExpectedCondition<?> condition, final long pollingTime,
                                            final int timeInSec) {
-        return waitWithConditionSilent(condition, pollingTime, timeInSec, null);
-    }
-
-    public boolean waitWithConditionSilent(@NonNull final ExpectedCondition<?> condition, final long pollingTime,
-                                           final int timeInSec, final String msg) {
         try {
             final WebDriverWait wait = new WebDriverWait(driver, timeInSec);
             wait.ignoring(NoSuchElementException.class);
             wait.ignoring(StaleElementReferenceException.class);
             wait.pollingEvery(Duration.ofMillis(pollingTime));
-            wait.withMessage(msg);
             wait.until(condition);
             return true;
         } catch (final TimeoutException e) {
             return false;
         }
+    }
+
+    public boolean waitSpinner(HtmlElement spinner) {
+        return waitWithConditionSilent(((ExpectedCondition<Boolean>) driver ->
+                !spinner.exists()), 500, 5);
     }
 }

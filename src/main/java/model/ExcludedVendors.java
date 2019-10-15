@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.*;
 import java.util.List;
 
 @Getter
-public class ExcludedVendors implements BaseModel {
+public class ExcludedVendors {
     private String rating;
     private List<String> vendors;
 
@@ -18,10 +18,5 @@ public class ExcludedVendors implements BaseModel {
     @XmlElement(name = "Vendor")
     public void setVendors(List<String> vendors) {
         this.vendors = vendors;
-    }
-
-    @Override
-    public String toString() {
-        return gson.toJson(this);
     }
 }

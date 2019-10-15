@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
-public class Manufacturer implements BaseModel {
+public class Manufacturer {
     private String products;
     private String name;
     private PriceLimit priceLimit;
@@ -24,10 +24,5 @@ public class Manufacturer implements BaseModel {
     @XmlElement(name = "Pricelimit")
     public void setPriceLimit(PriceLimit priceLimit) {
         this.priceLimit = priceLimit;
-    }
-
-    @Override
-    public String toString() {
-        return gson.toJson(this);
     }
 }

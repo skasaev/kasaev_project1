@@ -1,0 +1,2 @@
+mvn test -Dtest=Tests#testForChrome test && allure serve target/allure-results
+mvn test -Dtest=Tests#testForIE test && allure serve target/allure-results

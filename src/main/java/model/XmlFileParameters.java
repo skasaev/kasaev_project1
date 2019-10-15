@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Getter
 
 @XmlRootElement(name = "Parameters")
-public class XmlFileParameters implements BaseModel {
+public class XmlFileParameters {
     private Global global;
     private Manufacturers manufacturers;
 
@@ -20,10 +20,5 @@ public class XmlFileParameters implements BaseModel {
     @XmlElement(name = "Manufacturers")
     public void setManufacturers(Manufacturers manufacturers) {
         this.manufacturers = manufacturers;
-    }
-
-    @Override
-    public String toString() {
-        return gson.toJson(this);
     }
 }

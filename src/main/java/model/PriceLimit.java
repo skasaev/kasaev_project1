@@ -5,7 +5,7 @@ import lombok.Getter;
 import javax.xml.bind.annotation.XmlElement;
 
 @Getter
-public class PriceLimit implements BaseModel {
+public class PriceLimit {
     private int min;
     private int max;
 
@@ -17,10 +17,5 @@ public class PriceLimit implements BaseModel {
     @XmlElement(name = "Max")
     public void setMax(int max) {
         this.max = max;
-    }
-
-    @Override
-    public String toString() {
-        return gson.toJson(this);
     }
 }

@@ -5,8 +5,8 @@ import lombok.NonNull;
 import org.openqa.selenium.support.FindBy;
 import ru.yandex.qatools.htmlelements.annotations.Name;
 import ru.yandex.qatools.htmlelements.element.Button;
-import ru.yandex.qatools.htmlelements.element.CheckBox;
 import ru.yandex.qatools.htmlelements.element.HtmlElement;
+import tools.SeleniumTools;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 public class CheckBoxListBlock extends HtmlElement {
 
     @Name("Block description")
-    @FindBy(css = ".legend")
+    @FindBy(css = "legend")
     private HtmlElement blockDescription;
 
     @Name("Checkbox list")
@@ -32,12 +32,17 @@ public class CheckBoxListBlock extends HtmlElement {
     @FindBy(css = "input[name='Поле поиска']")
     private HtmlElement searchField;
 
-    public void selectCheckBox(@NonNull final String checkBoxLabelName) {
+    @Name("Filter spinner")
+    @FindBy(css = "._1Or6hY8Y3c")
+    private HtmlElement filterSpinner;
+
+    public void selectCheckBox(@NonNull final String checkBoxLabelName, @NonNull final SeleniumTools seleniumTools) {
         assertThat("Checkbox name should not be empty", checkBoxLabelName, not(isEmptyString()));
         assertThat("Expand button should be display", expandButton.exists());
         expandButton.click();
         assertThat("Search field should be displayed", searchField.exists());
         searchField.sendKeys(checkBoxLabelName);
+        seleniumTools.waitSpinner(filterSpinner);
 
         checkBoxList
                 .stream()

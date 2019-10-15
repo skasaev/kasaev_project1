@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.FindBy;
-import pages.elements.CatalogItem;
-import pages.elements.FilterBlock;
-import pages.elements.SelectBlock;
-import pages.elements.StoreRatingFilterBlock;
+import pages.elements.*;
 import ru.yandex.qatools.htmlelements.annotations.Name;
 import ru.yandex.qatools.htmlelements.element.HtmlElement;
 import ru.yandex.qatools.htmlelements.element.Link;
@@ -47,6 +44,10 @@ public class ListingPage extends MainPage {
     @FindBy(css = ".n-snippet-card2")
     private List<CatalogItem> catalogItems;
 
+    @Name("Listing spinner")
+    @FindBy(css = ".n-filter-applied-results .spin2_progress_yes")
+    private HtmlElement listingSpinner;
+
     private final static String DIRECTION_CLASS_PART = "n-filter-sorter_sort_";
     private final static String SELECTED_CLASS = "n-filter-sorter_state_select";
 
@@ -61,6 +62,47 @@ public class ListingPage extends MainPage {
         assertThat("Category page title differs", listingPageTitle.getText(), equalToIgnoringCase(title));
     }
 
+    @Step("Select filter {filterName} = {checkBoxLabelName}")
+    public void selectFilterCheckBox(@NonNull final String filterName, @NonNull final String checkBoxLabelName) {
+        CheckBoxListBlock filter = filterBlock.getCheckBoxListBlocks()
+                .stream()
+                .filter(block -> block.exists() && block.getBlockDescription().getText().equalsIgnoreCase(filterName))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Did not find filter block " + filterName));
+        filter.selectCheckBox(checkBoxLabelName, getSeleniumTools());
+    }
+
+    @Step("Filter by {type} price = {price}")
+    public void filterByPrice(@NonNull final String price, @NonNull final String type) {
+        HtmlElement priceField = type.equalsIgnoreCase("min") ? filterBlock.getPriceFromField() : filterBlock.getPriceToField();
+        assertThat("Price field should be displayed", priceField.exists());
+        priceField.sendKeys(price);
+    }
+
+    @Step("Select number of products per page {optionName}")
+    public void selectNumberOfProductsOption(@NonNull final String optionName){
+        getSeleniumTools().waitSpinner(listingSpinner);
+        assertThat("", pagerSelectBlock.exists());
+        pagerSelectBlock.selectOption(optionName);
+        getSeleniumTools().waitSpinner(listingSpinner);
+    }
+
+    /**
+     * set filter by rating
+     * @param rating example: "2", "4". "any"
+     */
+    @Step("Set filter by rating {rating}")
+    public void selectRatingFilter(@NonNull final String rating) {
+        final String attribute = "qrfrom_" + (rating.equalsIgnoreCase("any") ? "-1" : rating);
+        storeRatingFilterBlock.getRatingLabels()
+                .stream()
+                .filter(label -> label.exists() && label.getAttribute("for").equalsIgnoreCase(attribute))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Did not find filter with rating [" + rating
+                        + "], because did not find label attribute " + attribute))
+                .click();
+    }
+
 
     @Step("Select sorting items by {optionName} and direction is {direction}")
     public void sortingBy(@NonNull final String optionName, final String direction) {
@@ -73,14 +115,18 @@ public class ListingPage extends MainPage {
                 option.click();
             }
         }
+        getSeleniumTools().waitSpinner(listingSpinner);
         assertThat("Sorting option [" + optionName +"] should be selected",
                 isSortingOptionSelected(optionName, direction));
     }
 
     @Step("Check sorting items by price and {direction}")
     public void verifySortingByPrice(@NonNull final String direction) {
+        assertThat("Catalog item list should not be empty", catalogItems, not(empty()));
         final List<Integer> prices = catalogItems
-                .stream().map(CatalogItem::getPriceAsNumber).collect(Collectors.toList());
+                .stream()
+                .map(CatalogItem::getPriceAsNumber)
+                .collect(Collectors.toList());
         assertThat("Item price list should not be empty", prices, not(empty()));
         int prevPrice;
         if (direction.contains("возрастанию")) {
@@ -99,7 +145,6 @@ public class ListingPage extends MainPage {
                 prevPrice = currentPrice;
             }
         }
-
     }
 
     @Step("Select {index} catalog item")

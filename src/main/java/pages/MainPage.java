@@ -13,9 +13,12 @@ import ru.yandex.qatools.htmlelements.annotations.Name;
 import ru.yandex.qatools.htmlelements.element.HtmlElement;
 import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementDecorator;
 import ru.yandex.qatools.htmlelements.loader.decorator.HtmlElementLocatorFactory;
+import tools.AttachmentTools;
+import tools.SeleniumConfig;
 import tools.SeleniumTools;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,6 +52,17 @@ public class MainPage {
         this.seleniumTools = new SeleniumTools(driver);
     }
 
+    @Step("Open page {pageTitle} by url {url}")
+    public void getToUrl(@NonNull final String url, @NonNull final String pageTitle) {
+        driver.get(url);
+        assertThat("Title differs", driver.getTitle(), containsString(pageTitle));
+
+        if (!SeleniumConfig.isHeadless()) {
+
+        }
+
+    }
+
     @Step("Change region to {regionName}")
     public void changeRegion(@NonNull final String regionName) {
         assertThat("Region field on header should be visible", regionField.exists());
@@ -74,6 +88,11 @@ public class MainPage {
                 .filter(link -> link.exists() && link.getText().equalsIgnoreCase(categoryName))
                 .findFirst().orElseThrow(() -> new AssertionError("Did not find category link " + categoryName))
                 .click();
+    }
+
+    @Step("Get screen shoot")
+    public byte[] getScreenShot() throws IOException {
+        return AttachmentTools.namedScreenShot(driver);
     }
 
     private void closeRegionPopup() {

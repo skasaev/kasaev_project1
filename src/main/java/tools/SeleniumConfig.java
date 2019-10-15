@@ -1,3 +1,5 @@
+package tools;
+
 import lombok.Getter;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
@@ -11,8 +13,10 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class SeleniumConfig {
     private WebDriver driver;
+    private static boolean isHeadless;
 
-    public SeleniumConfig(boolean isHeadless) {
+    public SeleniumConfig(boolean isHeadlessParam) {
+        isHeadless = isHeadlessParam;
         driver = isHeadless ? getDriverForChrome() : getDriverForIE();
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.manage().window().maximize();
@@ -21,6 +25,7 @@ public class SeleniumConfig {
     private WebDriver getDriverForIE() {
         System.setProperty("webdriver.ie.driver","driver/IEDriverServer.exe");
         InternetExplorerOptions options = new InternetExplorerOptions()
+                .destructivelyEnsureCleanSession()
                 .setPageLoadStrategy(PageLoadStrategy.NORMAL)
                 .introduceFlakinessByIgnoringSecurityDomains()
                 .withInitialBrowserUrl("");
@@ -40,5 +45,7 @@ public class SeleniumConfig {
         return new ChromeDriver(options);
     }
 
-
+    public static boolean isHeadless() {
+        return isHeadless;
+    }
 }
